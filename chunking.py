@@ -89,3 +89,14 @@ def chunk_recursive(text:str,page_num:int):
 def split_into_sentences(text:str) -> list[str]:
     sentences = re.split(r'?<=[.!?])\s+',text)
     return [s.strip() for s in sentences if s.strip()]
+
+def chunk_text(text:str, page_num:int, strategy:str = 'recursive') -> list[dict[str,any]]:
+    '''this is the function which choses the chunking strategy between recursive and normal'''
+    if not text or not text.strip():
+        return []
+    if strategy == 'paragraph':
+        chunks = chunk_by_paragraphs(text,page_num)
+    else:
+        chunks = chunk_recursive(text,page_num)
+    chunks = [c for c in chunks if c['char_count'] >= min_chunk_size]
+    return chunks
