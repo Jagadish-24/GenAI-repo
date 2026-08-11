@@ -119,4 +119,17 @@ pages_with_removal = []
 for idx, page in enumerate(data):
     cleaned_page = clean_page(page)
     cleaned_data.append(cleaned_page)
+
+    if cleaned_page['removed_chares'] > 0:
+        total_removed += cleaned_page['removed_chars'] #add the page wise omits to the total numbers
+        pages_with_removal += 1 # add to count of pages with some removed content
+
+    if (idx + 1) % 50 == 0:
+        print(f"Cleaned page {idx+1}/{len(data)}") # show progress which page is running
+
+with open(output_file,"w",encoding="utf-8") as f:
+    json.dump(data,f,indent=2,ensure_ascii=True)
+
+print(f"saved_successfully\n{total_removed}")
+    
     
