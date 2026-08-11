@@ -71,5 +71,21 @@ def chunk_recursive(text:str,page_num:int):
                     }
                     chunks.append(chunk)
                     if current_chunk:
-                        overlap_text = current_chunk.split('.')[-1].strip()
+                        overlap_text = current_chunk.split('.')[-1].strip() 
                         current_chunk = overlap_text + ". " if overlap_text else ""
+
+                current_chunk += sentence + " "
+
+                if current_chunk.strip():
+                    chunk = {
+                        "text" : current_chunk.strip(),
+                        'page_number' : page_num,
+                        "chunk_type" : 'sentence_group',
+                        "char_count" : len(current_chunk)
+                    }
+                    chunks.append(chunk)
+    return chunks
+
+def split_into_sentences(text:str) -> list[str]:
+    sentences = re.split(r'?<=[.!?])\s+',text)
+    return [s.strip() for s in sentences if s.strip()]
