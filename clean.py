@@ -99,28 +99,16 @@ if not input_file.exists():
 
 with open(input_file,'r',encoding='utf-8') as f:
     data = json.load(f)
-
-
-
-
 print(f"Loading input json file {input_file}")
-
-if not input_file.exists():
-    raise FileNotFoundError(f"Input File : {input_file} not found")
-
-with open(input_file,'r',encoding='utf-8') as f:
-    data = json.load(f)
-print(f"Loaded {len(data)} pages")
-
 cleaned_data = []
 total_removed = 0
-pages_with_removal = []
+pages_with_removal = 0
 
 for idx, page in enumerate(data):
     cleaned_page = clean_page(page)
     cleaned_data.append(cleaned_page)
 
-    if cleaned_page['removed_chares'] > 0:
+    if cleaned_page['removed_chars'] > 0:
         total_removed += cleaned_page['removed_chars'] #add the page wise omits to the total numbers
         pages_with_removal += 1 # add to count of pages with some removed content
 
@@ -128,8 +116,6 @@ for idx, page in enumerate(data):
         print(f"Cleaned page {idx+1}/{len(data)}") # show progress which page is running
 
 with open(output_file,"w",encoding="utf-8") as f:
-    json.dump(data,f,indent=2,ensure_ascii=True)
+    json.dump(cleaned_data,f,indent=2,ensure_ascii=True)
 
-print(f"saved_successfully\n{total_removed}")
-    
-    
+print(detect_repeated_patterns(cleaned_data,10))
