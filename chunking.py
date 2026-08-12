@@ -62,7 +62,7 @@ def chunk_recursive(text:str,page_num:int):
             current_chunk = ""
 
             for sentence in sentences:
-                if len(current_chunk) + len(sentence) > chunk_size and current_chunk:
+                if len(current_chunk) + len(sentence) > chunk_size and current_chunk: #check if adding the sentance makes the current chunk size exceed the defined chunk size.
                     chunk = {
                         'text':current_chunk.strip(),
                         "page_number":page_num,
@@ -70,19 +70,22 @@ def chunk_recursive(text:str,page_num:int):
                         'char_count':len(current_chunk)
                     }
                     chunks.append(chunk)
-                    if current_chunk:
-                        overlap_text = current_chunk.split('.')[-1].strip() 
-                        current_chunk = overlap_text + ". " if overlap_text else ""
+                    if chunk_overlap > 0:
+                        words = current_chunk.split()
+                        overlap_words = min(10,len(words)) #take last 10 words or less if the chunk has less than 10 words
+                        current_chunk = ' '.join(words[-overlap_words:]) + " " #get the last
+                    else:
+                        current_chunk = "" #reset the current chunk if no overlap is defined
 
                 current_chunk += sentence + " "
 
-                if current_chunk.strip():
-                    chunk = {
-                        "text" : current_chunk.strip(),
-                        'page_number' : page_num,
-                        "chunk_type" : 'sentence_group',
-                        "char_count" : len(current_chunk)
-                    }
+            if current_chunk.strip(): #for the last chunk after the loop ends, we need to add it to the chunks list if it has any content
+                chunk = {
+                    "text" : current_chunk.strip(),
+                    'page_number' : page_num,
+                    "chunk_type" : 'sentence_group',
+                    "char_count" : len(current_chunk)
+                }
                 chunks.append(chunk)
     return chunks
 
@@ -152,7 +155,7 @@ try:
             chunks_per_page.append(0)
             continue
         #strating actual chunking
-        page_chunks = process_page(page,strategy='recursive')
+        page_chunks = process_page(page,strategy='paragraph')
         chunks_per_page.append(len(page_chunks))
         all_chunks.extend(page_chunks)
         if (idx + 1) % 50 == 0:
