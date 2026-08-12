@@ -31,7 +31,7 @@ def chunk_by_paragraphs(text:str,page_num:int):
 
         chunks.append(chunk_dict)
 
-        return chunks
+    return chunks
 
 def chunk_recursive(text:str,page_num:int):
     '''Recursive Chunking - splits the text hierarchially based on semantic structures like paragraphs, sentence and/or words (source : my interpretation of gemini answer)
@@ -65,7 +65,7 @@ def chunk_recursive(text:str,page_num:int):
                 if len(current_chunk) + len(sentence) > chunk_size and current_chunk:
                     chunk = {
                         'text':current_chunk.strip(),
-                        "page_numner":page_num,
+                        "page_number":page_num,
                         "chunk_type":'sentence_group',
                         'char_count':len(current_chunk)
                     }
@@ -83,11 +83,11 @@ def chunk_recursive(text:str,page_num:int):
                         "chunk_type" : 'sentence_group',
                         "char_count" : len(current_chunk)
                     }
-                    chunks.append(chunk)
+                chunks.append(chunk)
     return chunks
 
 def split_into_sentences(text:str) -> list[str]:
-    sentences = re.split(r'?<=[.!?])\s+',text)
+    sentences = re.split(r'(?<=[.!?])\s+',text)
     return [s.strip() for s in sentences if s.strip()]
 
 def chunk_text(text:str, page_num:int, strategy:str = 'recursive') -> list[dict[str,any]]:
@@ -100,7 +100,7 @@ def chunk_text(text:str, page_num:int, strategy:str = 'recursive') -> list[dict[
         chunks = chunk_recursive(text,page_num)
     chunks = [c for c in chunks if c['char_count'] >= min_chunk_size]
     return chunks
-def process_page(page_data:Dict[str,any],strategy: str = 'recursive') -> list[dict[str,any]]:
+def process_page(page_data:dict[str,any],strategy: str = 'recursive') -> list[dict[str,any]]:
     '''purpose of this function is to chunk the cleaned text of a single page'''
     '''input is the page dictionary containing the "cleaned_text" and "page_number" keys'''
 
@@ -112,6 +112,66 @@ def process_page(page_data:Dict[str,any],strategy: str = 'recursive') -> list[di
     for chunk in chunks:
         chunk['chunk_id'] = None # assign placeholder to store the chunk_id of each chunk.
     return chunks
-def analyse_chunks(chunks:List[Dict[str, any]]) -> Dict[str,any]:
+def analyse_chunks(chunks:list[dict[str, any]]) -> dict[str,any]:
     '''function to analyse chunk statistics'''
-    
+    if not chunks:
+        return {"total_chunks":0}
+    sizes = [c['char_count'] for c in chunks]
+    chunk_statistics = {
+        'total_chunks': len(chunks),
+        'min_size_of_chunk' : min(sizes),
+        'max_size_of_chunk' : max(sizes),
+        'avg_size' : sum(sizes) / len(sizes),
+        'total_chars':sum(sizes),
+    }
+    chunk_types = {}
+    for c in chunks:
+        ctype = c.get('chunk_type',"unknown")
+        chunk_types[ctype] = chunk_types.get(ctype,0)+1
+    chunk_statistics['chunk_types'] = chunk_types
+    return chunk_statistics
+
+#passing the input file
+try:
+    print(f"Loading the cleaned data from {input_file}")
+    if not input_file.exists():
+        raise FileNotFoundError(f"Input file not found {input_file}")
+    with open(input_file,'r',encoding='utf-8') as file:
+        pages = json.load(file)
+    print(f"Loaded {len(pages)} pages")
+#page tracking
+    total_pages = len(pages)
+    pages_with_texxt = sum(1 for p in pages if p.get('cleaned_text','').strip())
+    print(f"Pages with text = {pages_with_texxt}")
+#chunking each page
+    print("Started chunking process")
+    all_chunks = []
+    chunks_per_page = []
+    for idx, page in enumerate(pages):
+        if not page.get('cleaned_text','').strip(): #if the page dict do not contains cleaned text
+            chunks_per_page.append(0)
+            continue
+        #strating actual chunking
+        page_chunks = process_page(page,strategy='recursive')
+        chunks_per_page.append(len(page_chunks))
+        all_chunks.extend(page_chunks)
+        if (idx + 1) % 50 == 0:
+            print(f"Processed Page {idx+1}/{total_pages}") #progress update statement
+    #assign global id to each chunk
+    for idx, chunk in enumerate(all_chunks):
+        chunk["chunk_id"] = f"chunk_{idx:06d}"
+    print(f"\n Created {len(all_chunks)} chunks from {pages_with_texxt} pages")
+    stats = analyse_chunks(all_chunks)
+    print(f'\nChunk Statistics\nTotal chunks = {stats["total_chunks"]}\nAvg Chunk size = {stats["avg_size"]}')
+    with open(output_file,'w',encoding='utf-8') as file:
+        json.dump(all_chunks,file,indent=2,ensure_ascii=False)
+    print("chunking_complete")
+except FileNotFoundError as e:
+    print(f"\nError : {e}")
+except json.JSONDecodeError as e:
+    print("invalid json file")
+except Exception as e :
+    print(f"Unexpected error : {e}")
+    import traceback
+    traceback.print_exc()
+        
