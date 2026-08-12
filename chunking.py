@@ -100,3 +100,18 @@ def chunk_text(text:str, page_num:int, strategy:str = 'recursive') -> list[dict[
         chunks = chunk_recursive(text,page_num)
     chunks = [c for c in chunks if c['char_count'] >= min_chunk_size]
     return chunks
+def process_page(page_data:Dict[str,any],strategy: str = 'recursive') -> list[dict[str,any]]:
+    '''purpose of this function is to chunk the cleaned text of a single page'''
+    '''input is the page dictionary containing the "cleaned_text" and "page_number" keys'''
+
+    page_num = page_data['page_number']
+    text = page_data.get('cleaned_text')
+    if not text or not text.strip(): #check wehter we have cleaned text in that page
+        return []
+    chunks = chunk_text(text,page_num,strategy) #perform the chunking using the strategy chooser function
+    for chunk in chunks:
+        chunk['chunk_id'] = None # assign placeholder to store the chunk_id of each chunk.
+    return chunks
+def analyse_chunks(chunks:List[Dict[str, any]]) -> Dict[str,any]:
+    '''function to analyse chunk statistics'''
+    
