@@ -48,4 +48,34 @@ def prepare_chunk_data(chunks:List[Dict[str,Any]]) -> Dict[str,Any]:
     for chunk in chunks:
         ids.append(chunk['chunk_id'])
         embeddings.append(chunk['embedding'])
-        metadata = {'page_number'}   
+        metadata = {'page_number':chunk['page_number'],
+                    'chunk_type':chunk.get('chunk_type','unknown'),
+                    'char_count' : chunk['char_count'],
+                    'embedding_dim' : chunk.get('embedding_dim',0),
+                    'embedding_method' : chunk.get('embedding_method','unknown')
+                    }
+        metadatas.append(metadata)
+
+        documents.append(chunk['text'])
+    print(f"Prepared {len(ids)} chunks for insertion")
+    return {
+        'ids':ids,
+        "embeddings" : embeddings,
+        'metadatas' : metadata,
+        'documents' : documents
+    }
+def add_to_collection(collection,data:Dict[str,Any]):
+    '''Add the prepared data to the chromadb persistent client'''
+    print("Adding the prepared chunks into the database")
+    existing_count = collection.count()
+    if existing_count > 0:
+        try:
+            existing_ids = collection.get()['ids']
+            if existing_ids:
+                collection.delete(ids=existing_ids) #deleting the existing data to avoid duplicates
+                print("Existing ids deleted")
+        except Exception as e:
+            print(f"Could not delete existing data : {e}")
+    batch_size = 100 # the data is added to the vector db in bathces to avoid memory issues
+    total_batches = 
+           
