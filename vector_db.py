@@ -4,182 +4,185 @@ import sys
 import time
 from pathlib import Path
 from typing import List, Dict, Any
-import numpy as np
 
-#libraries for ollama based embedding generation
-import requests
-#libraries for tf-idf based method
-from sklearn.feature_extraction.text import TfidfVectorizer
-
+#libraris for chromadb
+import chromadb
+from chromadb.config import Settings
+#libraries for ollama
+import ollama
 data_dir = Path("data")
-input_file = data_dir/"chunked.json"
-output_file = data_dir/"embeddings.json"
+input_file = data_dir/"embeddings.json"
+database_dir = data_dir/"chroma_db"
 
-embedding_method = 'ollama' #to use if ollama is available
-#embedding_method = 'tfidf' #to use if ollama is not available
+collection_name = 'book_chunks' #collections store the embeddings - vector representations of the text data, documents - the original text content, metadat - source,timestamp etc
 
-#ollama settings
-ollama_model = 'nomic-embed-text' #small embedding model & faster
-# ollama_model = 'mxbai-embed-large'#larger & slower model
+test_queries = ["What is natural language processing?", "How do transformers work?", 'What is machine learning?']
 
-#tf-idf settings
-max_features = 5000 #maximum number of 'features' for TF-IDF - features are the unique words (in other words n-grams) extracted from the text
-
-def get_ollama_embedding(text:str,model:str=ollama_model) -> List[float]:
-    '''function to get the embedding from ollama server
-    before running in a separate terminal run 
-    1. ollama serve
-    2. ollama pull nomi-embed-text'''
+#initialize chromadb
+def get_chroma_db_client():
+    '''1. this function will initialize a chromadb client
+    2. the chromadb stores the vectors in persistent/permananent directory so we dont need to perform embedding every time we restart the system'''
     try:
-        url = "http://localhost:11434/api/embeddings"
-        payload = {
-            'model':model,
-            "prompt":text,
-        }
-        response = requests.post(url,json=payload,timeout=30)
-        response.raise_for_status() #raises a flag if there is any 4## or 5## error, if its good no flag is raised
-
-        data = response.json()
-        embedding = data.get('embedding',[])
-
-        if not embedding:
-            raise ValueError(f"The embedding returned for {model} is empty")
-
-        return embedding
+        client = chromadb.PersistentClient(path=str(database_dir),settings = Settings(anonymized_telemetry=False)) #disabling telemetry (connection to cloud) for privacy
     except ImportError:
-        raise ImportError("requests library not installed")
-    except requests.exceptions.ConnectionError:
-        raise ConnectionError("Ollama server not running or is not installed")
-    except Exception as e:
-        raise Exception(f"Failed to get embedding")
-def generate_ollama_embeddings(chunks:List[Dict[str,Any]]) -> List[Dict[str,Any]]:
-    '''using above function to generate ollama_embedding for all chunks'''
-    print(f"using ollama model {ollama_model}")
-    embedded_chunks = []
-    total_chunks = len(chunks)
-    for idx,chunk in enumerate(chunks):
-        try:
-            embedding = get_ollama_embedding(chunk['text']) #get the embedding for the text contained in the chunk
-            embedded_chunk = chunk.copy() #creating a copy of the chunk itself so we preserve the structure and add other imp things like embedding, dimensions added to it
-            embedded_chunk['embedding'] = embedding
-            embedded_chunk['embedding_dimesion'] = len(embedding)
-            embedded_chunk['embedding_method'] = 'ollama'
-            embedded_chunk['embedding_model'] = ollama_model
-            embedded_chunks.append(embedded_chunk)
-            #progress indiaction
-            if (idx+1) % 10 == 0 or (idx+1) == total_chunks:
-                print(f"Embedding completed for {idx+1}/{total_chunks} chunks")
-        except Exception as e:
-            print(f"Falied embedding {idx} page {chunk['page_number']} : {e}")
-            continue
-    print(f"embedding successful")
-    return embedded_chunks
-#generating embeddings using tf-idf
-def generate_tfidf_embeddings(chunks: List[Dict[str,Any]]) -> List[Dict[str,Any]]:
-    '''this function to generate embeddings using tf-idf method - pure keyword search'''
-    texts = [chunk['text'] for chunk in chunks]
-    print(f"Training TF-IDF on {len(texts)} documents")
-    #initialize the vectorizer
-    vectorizer = TfidfVectorizer(
-        max_features=max_features,
-        stop_words = 'english',
-        lowercase = True,
-        strip_accents = 'unicode'
-    )
-    tfidf_matrix = vectorizer.fit_transform(texts) #fit transform does do things 1. learns the vocabulary and the IDF weigths from the input texts and converts the text into tf-idf feature vectors based on its learning
-    print(f"tf-idf matrix shape = {tfidf_matrix.shape}")
-    print(f"Vocabulary size of the document is {len(vectorizer.get_feature_names_out())}")
-    embedded_chunks = []
-    for idx, chunk in enumerate(chunks):
-        #get the tf-idf vector for this chunk
-        embedding = tfidf_matrix[idx]
-        #convert it to an array
-        embedding = embedding.toarray()
-        #convert the 2d array from previous step to a single dimensional array 
-        embedding = embedding.flatten()
-        #convert the flattened array to a list
-        embedding = embedding.tolist()
-        embedded_chunk = chunk.copy() #creating a copy of the chunk itself so we preserve the structure and add other imp things like embedding, dimensions added to it
-        embedded_chunk['embedding'] = embedding
-        embedded_chunk['embedding_dimesion'] = len(embedding)
-        embedded_chunk['embedding_method'] = 'tfidf'
-        embedded_chunk['tfidf_vocab_size'] = len(vectorizer.get_feature_names_out())
-        embedded_chunks.append(embedded_chunk)
+        raise ImportError("Chromadb is not installed")
+    return client
+def get_or_create_collection(client):
+    '''this function is the one which creates/fetches a collection
+    collection is an equivalent to the "table" ins SQL, it holds all the chunks and their embeddings for a dataset'''
+    try:
+        collection = client.get_collection(collection_name)
+        print(f'collection found : {collection_name} ')
+        print(f"collection has {collection.count()} documents")
+        return collection
+    except Exception:
+        print(f"Creating new collections : {collection_name}")
+        collection = client.create_collection(name = collection_name, metadata={'description':"NLP book's chunks","hnsw:space": "cosine"})
+        print('new collection created')
+        return collection
+def prepare_chunk_data(chunks:List[Dict[str,Any]]) -> Dict[str,Any]:
+    '''Chromadb needs following to be added to the collection
+    1. ids - unique identifiers for a each chunk
+    2. embeddings - the vector representation of each chunk
+    3. metadata - added info like page numbers
+    4. documents - the actual text content itself'''
+    ids = []; embeddings = []; metadatas=[]; documents = []
+    for chunk in chunks:
+        ids.append(chunk['chunk_id'])
+        embeddings.append(chunk['embedding'])
+        metadata = {'page_number':chunk['page_number'],
+                    'chunk_type':chunk.get('chunk_type','unknown'),
+                    'char_count' : chunk['char_count'],
+                    'embedding_dim' : chunk.get('embedding_dim',0),
+                    'embedding_method' : chunk.get('embedding_method','unknown')
+                    }
+        metadatas.append(metadata)
 
-        if (idx+1) % 50 == 0:
-            print(f"Embedding {len(embedded_chunks)} chunks using TF-IDF" )
-    print("Chunk embedding done")
-    return embedded_chunks
-#embedding generator with the method as an input
-def generate_embedding(chunks:List[Dict[str,Any]],method : str = 'ollama') -> List[Dict[str,Any]]:
-    '''The actual function which will be generating the embedding based on the specified method'''
-    if not chunks:
-        print("No chunks !")
-        return []
-    print(f"Starting the embedding for {len(chunks)}")
-    #getting total text size
-    total_chars = sum(len(c['text']) for c in chunks)
-    print(f"Total charecters embed = {total_chars}")
-    start_time = time.time()
-    if method == 'ollama':
-        embedded = generate_ollama_embeddings(chunks)
-    elif method == 'tfidf':
-        embedded = generate_tfidf_embeddings(chunks)
-    else:
-        raise ValueError(f"Invalid Method {method} chosen")
-    elapsed = time.time() - start_time
-    print(f"elapsed time = {elapsed:.2f}")
-    return embedded
-def validate_embeddings(embedded_chunks: List[Dict[str,Any]]) -> Dict[str,Any]:
-    '''fucntion to check if my embedding are generated correctly or not'''
-    if not embedded_chunks:
-        return{'valid':False,'error':"No embedded_chunks"}
-
-    #checking the first chunk
-    first_chunk = embedded_chunks[0]
-    if 'embedding' not in first_chunk:
-        return {'valid':False, "error" : "No embedding found"}
-    if not first_chunk['embedding']:
-        return {'valid':False,'error':'Empty embedding'}
-    embedding_dim = len(first_chunk['embedding']) #getting the dimension of the fisrt embedding to check if all chunks have uniform embedding length despite different chunk length
-    for chunk in embedded_chunks:
-        if len(chunk['embedding']) != embedding_dim:
-            return {
-                'valid':False,
-                'error': f"Inconsistent dimensions : {len(chunk['embedding'])} vs {embedding_dim}"
-            }
-    embeddings = [c['embedding'] for c in embedded_chunks]
-    embed_Array = np.array(embeddings)
-
+        documents.append(chunk['text'])
+    print(f"Prepared {len(ids)} chunks for insertion")
     return {
-        'valid' : True,
-        'number_of_chunks' : len(embedded_chunks),
-        'embedding_dim' : embedding_dim,
-        'embedding_method' : embedded_chunks[0].get('embedding_method','unknown'),
-        'embedding_mean' : embed_Array.mean(),
-        'embedding_std' : embed_Array.std(),
-        'embedding_min' : embed_Array.min(),
-        'embedding_max' : embed_Array.max(),
+        'ids':ids,
+        "embeddings" : embeddings,
+        'metadatas' : metadatas,
+        'documents' : documents
     }
+def add_to_collection(collection,data:Dict[str,Any]):
+    '''Add the prepared data to the chromadb persistent client'''
+    print("Adding the prepared chunks into the database")
+    existing_count = collection.count()
+    if existing_count > 0:
+        try:
+            existing_ids = collection.get()['ids']
+            if existing_ids:
+                collection.delete(ids=existing_ids) #deleting the existing data to avoid duplicates
+                print("Existing ids deleted")
+        except Exception as e:
+            print(f"Could not delete existing data : {e}")
+    batch_size = 100 # the data is added to the vector db in bathces to avoid memory issues
+    total_batches = (len(data['ids']) + batch_size - 1) // batch_size
+    print(f"Adding data in {total_batches} batches of size {batch_size}")
+    for i in range(0,len(data['ids']),batch_size):
+        #we move every "batch_size = 100" chunks and add them to the vectordb
+        batch_end = min(i+batch_size, len(data['ids'])) #sets the limit when i = 0 it will be 100, then i = 100 (note the step = 100), then batch_end = 200 = i=100 + bathc_szie = 100
+        batch_ids = data['ids'][i:batch_end]
+        batch_embeddings = data['embeddings'][i:batch_end]
+        batch_metadatas = data['metadatas'][i:batch_end]
+        batch_documents = data['documents'][i:batch_end]
+        try: #adding the information into the collection
+            collection.add(
+                ids = batch_ids,
+                embeddings = batch_embeddings,
+                metadatas = batch_metadatas,
+                documents = batch_documents
+            )
+            if (i + batch_size) % 500 ==0 or batch_end == len(data['ids']):
+                #print something when every 500 chunks are added
+                print(f"Added {batch_end}/{len(data['ids'])} chunks")
+        except Exception as e:
+            print(f"Failded to add batch starting at {i} : {e}")
+            print("Trying to add them individually")
+            for j in range(i,batch_end):
+                try:
+                    collection.add(
+                        ids = [data['ids'][j]],
+                        embeddings=[data['embeddings'][j]],
+                        metadatas=[data['metadatas'][j]],
+                        documents = [data['documents'][j]]
+                    )
+                except Exception as e2:
+                    print(f"Failed to add chunk {j} : {e2}")
+    final_count = collection.count()
+    print(f"Database now has {final_count} chunks")
+#creating a simple function to test retrieval from the database
+def get_query_embedding(query_text):
+    response = ollama.embeddings(
+        model="nomic-embed-text",
+        prompt=query_text
+    )
+    return response["embedding"]
+def test_retrieval(collection, query_text:str,n_results:int=3):
+    '''This code will test the database by retrieving some chunks for a query'''
+    print(f"Test Query = {query_text}")
+    try:
+        '''doing a similarity search
+        there are three ways of doing this:
+        1. Cosine Similarity = cos(theta) = DotProduct(vector_A, vector_B) / Mag(vector_A) * Mag(vector_b), from this the codine distance = 1 - cosine similarity is found
+            1.1 is cosine similaroty = 1 ==> theta = 0 deg, the vectors point in the same exact direction, They are perfectly similar
+            1.2 cosine similaroty = 0 ==> theta = 90 deg the vectors are perpendicular, they share no similarity hence are independent of each other
+            1.3 cosine similaroty = -1 ==> theta = 180 deg the vectors are in opposite directions, they are perfectly dissimilar'''
+        '''to add later about square l2 and iiner product distance'''
+        query_embedding = get_query_embedding(query_text)
+        results = collection.query(query_embeddings=[query_embedding], n_results=n_results)
+        if results and results['documents'][0]:
+            for i in range(len(results['documents'][0])):
+                doc = results['documents'][0][i]
+                metadata = results['metadatas'][0][i]
+                distance = results['distances'][0][i] if 'distances' in results else None
+                print(f"Result {i+1} Page {metadata.get('page_number',"?")} : ")
+                print(f"Relevance score = {1 - distance if distance else 'NA'}")
+                print(f"Distance = {distance:.2f}")
 
-#executing the embedding generation
-try:
-    print(f"Loading Chunks from : {input_file}")
-    if not input_file.exists():
-        raise FileNotFoundError(f"File not found : {input_file}")
-    with open(input_file,'r',encoding='utf-8') as file:
-        chunks = json.load(file)
-    print(f"Loaded {len(chunks)} chunks")
-    embedded_chunks = generate_embedding(chunks,method=embedding_method)
-    print("Validating the generated embeddings")
-    validation = validate_embeddings(embedded_chunks)
-    if not validation['valid']:
-        print(f"Validation failed : {validation.get('error','unknown error')}")
-    print("validation passed")
-    with open(output_file,'w',encoding='utf-8') as f:
-        json.dump(embedded_chunks, f, indent=2, ensure_ascii=False)
-    print("EMBEDDING COMPLETE")
-except FileNotFoundError as e:
-    print("File Not Found")
-except json.JSONDecodeError as e:
-    print("Invalid JSON input")
+                preview = doc[:200].replace('\n',"")
+                if len(doc) > 200:
+                    preview += "..."
+                print(f"Preview : {preview}")
+        else:
+            print("No results found for the query")
+    except Exception as e:
+        print(f"Failed to retrieve results for the query : {e}")
+
+print(f"Loading the data from {input_file}")
+
+if not input_file.exists():
+    raise FileNotFoundError(f"Input file {input_file} does not exist. Please run the embedding script first.")
+with open(input_file,'r',encoding='utf-8') as f:
+    chunks = json.load(f)
+print(f"Loaded {len(chunks)} chunks from the input file")
+if chunks and 'embedding' not in chunks[0]:
+    print("The loaded chunks do not contain embeddings. Please run the embedding script first.")
+print("Initializing the chromadb client")
+client = get_chroma_db_client()
+collection = get_or_create_collection(client)
+data = prepare_chunk_data(chunks)
+add_to_collection(collection,data)
+for query in test_queries:
+    test_retrieval(collection,query,n_results=3)
+print("\nDatabase Statistics : ")
+print(f"Total chunks in database: {collection.count()}")
+print(f"Collection name: {collection_name}")
+print(f"Database location: {database_dir}")
+sample = collection.get(limit=5)
+if sample and sample['metadatas']:
+    print(f"Sample page numbers = {[m.get('page_number','?') for m in sample['metadatas'][:5]]}")
+    summary_file = data_dir/"db_summary.json"
+    summary = {
+            "collection_name": collection_name,
+            "total_documents": collection.count(),
+            "database_location": str(data_dir),
+            "embedding_dimension": len(chunks[0]['embedding']) if chunks else 0,
+            "test_queries": test_queries,
+            "creation_time": time.strftime("%Y-%m-%d %H:%M:%S")
+        }
+    with open(summary_file, 'w', encoding='utf-8') as f:
+        json.dump(summary, f, indent=2)
+    print(f"\nSaved summary to: {summary_file}")
