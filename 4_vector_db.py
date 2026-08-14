@@ -1,3 +1,4 @@
+import datetime
 import os
 import json
 import sys
@@ -13,10 +14,11 @@ import ollama
 data_dir = Path("data")
 input_file = data_dir/"embeddings.json"
 database_dir = data_dir/"chroma_db"
+retrieve_dir = data_dir/"retrieved_chunks"
 
 collection_name = 'book_chunks' #collections store the embeddings - vector representations of the text data, documents - the original text content, metadat - source,timestamp etc
 
-test_queries = ["What is natural language processing?", "How do transformers work?", 'What is machine learning?']
+test_queries = ["What is Confidentiality?", "What are Cybersecurity requirements at the supplier level?", 'What is Positioning technology?']
 
 #initialize chromadb
 def get_chroma_db_client():
@@ -120,7 +122,7 @@ def get_query_embedding(query_text):
         prompt=query_text
     )
     return response["embedding"]
-def test_retrieval(collection, query_text:str,n_results:int=3):
+def test_retrieval(collection, query_text:str,n_results:int=3,save_retrieved:bool=True):
     '''This code will test the database by retrieving some chunks for a query'''
     print(f"Test Query = {query_text}")
     try:
@@ -133,6 +135,12 @@ def test_retrieval(collection, query_text:str,n_results:int=3):
         '''to add later about square l2 and iiner product distance'''
         query_embedding = get_query_embedding(query_text)
         results = collection.query(query_embeddings=[query_embedding], n_results=n_results)
+        retrieval_results = {
+            'query': query_text,
+            # 'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'n_results': n_results,
+            'results': []
+        }
         if results and results['documents'][0]:
             for i in range(len(results['documents'][0])):
                 doc = results['documents'][0][i]
@@ -146,6 +154,27 @@ def test_retrieval(collection, query_text:str,n_results:int=3):
                 if len(doc) > 200:
                     preview += "..."
                 print(f"Preview : {preview}")
+
+                retrieval_results['results'].append({
+                    'rank': i+1,
+                    'page_number': metadata.get('page_number',"?"),
+                    'chunk_type': metadata.get('chunk_type','unknown'),
+                    'char_count': metadata.get('char_count',0),
+                    'distance': distance,
+                    'relevance_score': 1 - distance if distance else None,
+                    'preview': preview,
+                    'full_text': doc,
+                    'metadata': metadata
+                    
+                })
+            if save_retrieved:
+                retrieve_dir.mkdir(parents=True, exist_ok=True)
+                # timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                safe_query = query_text.replace(" ", "_").replace("?", "").replace("/", "_")
+                output_file = retrieve_dir/f"retrieved_{safe_query}.json"
+                with open(output_file, 'w', encoding='utf-8') as f:
+                    json.dump(retrieval_results, f, indent=2)
+                print(f"Saved retrieved results to: {output_file}")
         else:
             print("No results found for the query")
     except Exception as e:

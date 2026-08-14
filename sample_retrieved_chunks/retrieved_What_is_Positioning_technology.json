@@ -1,0 +1,57 @@
+{
+  "query": "What is Positioning technology?",
+  "n_results": 3,
+  "results": [
+    {
+      "rank": 1,
+      "page_number": 6,
+      "chunk_type": "sentence_group",
+      "char_count": 743,
+      "distance": 301.2720947265625,
+      "relevance_score": -300.2720947265625,
+      "preview": "preventing chaos and maintaining public confidence in intelligent transportation systems. Question 7Explain the significant characteristics of the technologies below interms of autonomous vehicles7...",
+      "full_text": "preventing chaos and maintaining public confidence in intelligent transportation systems. Question 7\nExplain the significant characteristics of the technologies below in\nterms of autonomous vehicles\n7a. Positioning Technology\n\u2022\nThis technology enables autonomous vehicles to know their precise location. \u2022\nIt relies on multi-sensor fusion, combining GNSS (GPS) for global\ncoordinates, IMUs for relative motion, odometry, and HD Maps for highly\naccurate localization. \u2022\nAccuracy (centimetres-level) is paramount for safe navigation and lane keeping. Systems prioritize robustness and redundancy to overcome signal loss (e.g., in\ntunnels). \u2022\nCybersecurity is vital, as GPS spoofing or jamming could mislead the vehicle,\ncompromising safety. 7b.",
+      "metadata": {
+        "embedding_dim": 0,
+        "chunk_type": "sentence_group",
+        "embedding_method": "ollama",
+        "char_count": 743,
+        "page_number": 6
+      }
+    },
+    {
+      "rank": 2,
+      "page_number": 6,
+      "chunk_type": "sentence_group",
+      "char_count": 780,
+      "distance": 389.0668029785156,
+      "relevance_score": -388.0668029785156,
+      "preview": "spoofing or jamming could mislead the vehicle, compromising safety. 7b. Vision TechnologyVision technology allows autonomous vehicles to \"see\" and understand theirsurroundings. It integrates data fr...",
+      "full_text": "spoofing or jamming could mislead the vehicle, compromising safety. 7b. Vision Technology\nVision technology allows autonomous vehicles to \"see\" and understand their\nsurroundings. It integrates data from:\n\u2022\nCameras: Provide rich visual data for object classification, lane detection, and\ntraffic sign recognition, though sensitive to lighting. \u2022\nLiDAR: Generates precise 3D point clouds for accurate depth and obstacle\ndetection, effective in varying light. \u2022\nRadar: Excels in adverse weather for long-range detection and velocity\nmeasurement. Sensor fusion combines these inputs for a comprehensive and\nrobust environmental perception. Cybersecurity concerns include adversarial\nattacks that can trick AI perception or jamming of sensors, leading to dangerous\nmisinterpretations.",
+      "metadata": {
+        "char_count": 780,
+        "embedding_dim": 0,
+        "embedding_method": "ollama",
+        "page_number": 6,
+        "chunk_type": "sentence_group"
+      }
+    },
+    {
+      "rank": 3,
+      "page_number": 12,
+      "chunk_type": "sentence_group",
+      "char_count": 455,
+      "distance": 418.3415222167969,
+      "relevance_score": -417.3415222167969,
+      "preview": "Radar, LiDAR) Provide environmental perception for ADAS and autonomous driving. \u2022Vulnerability: Spoofing or jamming sensor signals to deceive the vehicleabout objects, lanes, or traffic signs, causi...",
+      "full_text": "Radar, LiDAR) Provide environmental perception for ADAS and autonomous driving. \u2022\nVulnerability: Spoofing or jamming sensor signals to deceive the vehicle\nabout objects, lanes, or traffic signs, causing incorrect driving decisions. 7. Software Update Mechanisms (OTA): Allows remote software and firmware\nupdates. \u2022\nVulnerability: Injection of malicious updates if the process isn't properly\nauthenticated and encrypted, or integrity checks are bypassed.",
+      "metadata": {
+        "char_count": 455,
+        "chunk_type": "sentence_group",
+        "embedding_method": "ollama",
+        "embedding_dim": 0,
+        "page_number": 12
+      }
+    }
+  ]
+}
