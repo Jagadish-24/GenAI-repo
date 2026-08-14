@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pymupdf
 
-pdf_file_name = "nlp-book.pdf"
+pdf_file_name = "Automotive Cyber Security Tutorial 1_25PGCSMB112.pdf"
 
 data_dir = Path("data")
 output_file = data_dir/"extracted.json"

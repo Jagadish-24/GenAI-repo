@@ -1,12 +1,12 @@
 {
   "collection_name": "book_chunks",
-  "total_documents": 2760,
+  "total_documents": 40,
   "database_location": "data",
   "embedding_dimension": 768,
   "test_queries": [
-    "What is natural language processing?",
-    "How do transformers work?",
-    "What is machine learning?"
+    "What is Confidentiality?",
+    "How are Cybersecurity requirements at the supplier level?",
+    "What is Positioning technology?"
   ],
-  "creation_time": "2026-08-14 12:10:57"
+  "creation_time": "2026-08-14 14:58:53"
 }

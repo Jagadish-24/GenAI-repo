@@ -1,0 +1,57 @@
+{
+  "query": "How are Cybersecurity requirements at the supplier level?",
+  "n_results": 3,
+  "results": [
+    {
+      "rank": 1,
+      "page_number": 1,
+      "chunk_type": "sentence_group",
+      "char_count": 737,
+      "distance": 124.04922485351562,
+      "relevance_score": -123.04922485351562,
+      "preview": "What are the requirements at OEM level and supplier level? Explain indetailCybersecurity in the Automotive sector is a shared responsibility between OEMs andtheir suppliers. Cybersecurity Requireme...",
+      "full_text": "What are the requirements at OEM level and supplier level? Explain in\ndetail\nCybersecurity in the Automotive sector is a shared responsibility between OEMs and\ntheir suppliers. Cybersecurity Requirements at the OEM level\n1. Strategic Integration of Cybersecurity \u2013 Security by Design\na. The Security by design approach implies that the OEMs must incorporate\ncybersecurity considerations from the initial design phases of the vehicle. This ensures that potential vulnerabilities are addressed proactively,\nreducing risks and costs at later stages. b. OEMs also need to include defining security principles for hardware and\nsoftware modules and assigning clear security roles. 2. Compliance with International Standards and Regulations\na.",
+      "metadata": {
+        "chunk_type": "sentence_group",
+        "embedding_method": "ollama",
+        "page_number": 1,
+        "embedding_dim": 0,
+        "char_count": 737
+      }
+    },
+    {
+      "rank": 2,
+      "page_number": 2,
+      "chunk_type": "sentence_group",
+      "char_count": 476,
+      "distance": 154.8623046875,
+      "relevance_score": -153.8623046875,
+      "preview": "as such, must implement their own robust cybersecurity management systems. This includes protecting their internal networks,intellectual property, and ensuring the security of their development andp...",
+      "full_text": "as such, must implement their own robust cybersecurity management systems. This includes protecting their internal networks,\nintellectual property, and ensuring the security of their development and\nproduction processes to prevent the introduction of malicious code or\ncompromised components into the supply chain. 4. Collaboration and Information Sharing - Suppliers need to work effectively with\nOEMs to integrate and validate end-to-end cybersecurity solutions. This often",
+      "metadata": {
+        "page_number": 2,
+        "chunk_type": "sentence_group",
+        "embedding_method": "ollama",
+        "char_count": 476,
+        "embedding_dim": 0
+      }
+    },
+    {
+      "rank": 3,
+      "page_number": 2,
+      "chunk_type": "sentence_group",
+      "char_count": 782,
+      "distance": 162.3001708984375,
+      "relevance_score": -161.3001708984375,
+      "preview": "Wi-Fi, Bluetooth etc.,), network security via firewalls, central gateways. b. The ECU also must be protected against various attack classes throughcountermeasures like encryption, authentication, cod...",
+      "full_text": "Wi-Fi, Bluetooth etc.,), network security via firewalls, central gateways. b. The ECU also must be protected against various attack classes through\ncountermeasures like encryption, authentication, code analysis and\nphysical tapering detection\nCybersecurity Requirements at the Supplier Level\n1. Adherence to OEM specifications and Industry Standards \u2013 Suppliers must\nstrictly adhere to cybersecurity specs provided by the OEM and comply with\nrelevant industry standards like the ISO/SAE 21434. 2. Secure Development of Components and Software\na. AUTOSAR Implementation: Suppliers developing AUTOSAR-based\nsoftware must ensure their implementations are secure, even if OEMs\ndefine the specific cryptographic algorithms. This includes secure coding\npractices and thorough testing. b.",
+      "metadata": {
+        "embedding_dim": 0,
+        "embedding_method": "ollama",
+        "page_number": 2,
+        "chunk_type": "sentence_group",
+        "char_count": 782
+      }
+    }
+  ]
+}

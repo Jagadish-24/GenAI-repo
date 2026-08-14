@@ -1,0 +1,57 @@
+{
+  "query": "What is Confidentiality?",
+  "n_results": 3,
+  "results": [
+    {
+      "rank": 1,
+      "page_number": 7,
+      "chunk_type": "sentence_group",
+      "char_count": 686,
+      "distance": 250.631591796875,
+      "relevance_score": -249.631591796875,
+      "preview": "Confidential CQuestion 88a. What is Confidentiality in terms of in-vehicle communicationnetworks (e.g., CAN bus)? In terms of in-vehicle communication networks like the CAN bus, Confidentiality ref...",
+      "full_text": "Confidential C\nQuestion 8\n8a. What is Confidentiality in terms of in-vehicle communication\nnetworks (e.g., CAN bus)? In terms of in-vehicle communication networks like the CAN bus, Confidentiality refers\nto ensuring that data transmitted across the network is not disclosed to unauthorized\nentities. While traditional CAN bus communication often\nprioritizes Integrity and Availability over Confidentiality (as data is typically exchanged\nbetween trusted ECUs within a closed system), it becomes crucial when:\n\u2022\nSensitive User Data: Personal information (e.g., navigation history, biometric\ndata, communication logs) is transmitted between ECUs, especially to/from\ninfotainment systems.",
+      "metadata": {
+        "page_number": 7,
+        "char_count": 686,
+        "embedding_dim": 0,
+        "embedding_method": "ollama",
+        "chunk_type": "sentence_group"
+      }
+    },
+    {
+      "rank": 2,
+      "page_number": 3,
+      "chunk_type": "sentence_group",
+      "char_count": 708,
+      "distance": 325.6581115722656,
+      "relevance_score": -324.6581115722656,
+      "preview": "programs, devices, and data from cyberattacks, damage, or unauthorized access. CIA Triad: Confidentiality, Integrity, AvailabilityThe CIA triad is a foundational model for information security, outli...",
+      "full_text": "programs, devices, and data from cyberattacks, damage, or unauthorized access. CIA Triad: Confidentiality, Integrity, Availability\nThe CIA triad is a foundational model for information security, outlining the three\nprimary goals of any security system. 1. Confidentiality ensures that information is accessible only to authorized\nindividuals, entities, or processes. It prevents unauthorized disclosure of\nsensitive data. 2. Integrity ensures that information is accurate, complete, and has not been\nmodified or tampered with by unauthorized parties. It also implies that the data\nis consistent and trustworthy. 3. Availability ensures that authorized users can access information and resources\nwhen needed.",
+      "metadata": {
+        "chunk_type": "sentence_group",
+        "embedding_dim": 0,
+        "char_count": 708,
+        "embedding_method": "ollama",
+        "page_number": 3
+      }
+    },
+    {
+      "rank": 3,
+      "page_number": 6,
+      "chunk_type": "sentence_group",
+      "char_count": 709,
+      "distance": 344.59906005859375,
+      "relevance_score": -343.59906005859375,
+      "preview": "Confidential CEfficiency: V2I optimizes traffic flow. A cyberattack disrupting adaptive trafficmanagement systems (impacting Availability and Integrity) would lead to massivecongestion and economic...",
+      "full_text": "Confidential C\nEfficiency: V2I optimizes traffic flow. A cyberattack disrupting adaptive traffic\nmanagement systems (impacting Availability and Integrity) would lead to massive\ncongestion and economic losses. Privacy: V2I systems, like smart parking or electronic tolling, collect sensitive vehicle\nand driver data. Breaching this data's Confidentiality could expose personal travel\npatterns or financial information. Robust cybersecurity, encompassing Authentication, Authorization, Accounting, and\nensuring Confidentiality, Integrity, and Availability, is crucial for V2I's safe, reliable,\nand trustworthy operation, preventing chaos and maintaining public confidence in\nintelligent transportation systems.",
+      "metadata": {
+        "char_count": 709,
+        "embedding_dim": 0,
+        "embedding_method": "ollama",
+        "page_number": 6,
+        "chunk_type": "sentence_group"
+      }
+    }
+  ]
+}
