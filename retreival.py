@@ -76,5 +76,78 @@ def retrieve_chunks(collection,query:str,top_k int = top_k_retrievals) -> List[D
 #again we are penalizing the score anything that is a question and not an answer
             if is_question and not has_answer:
                 adjusted_score -= 0.10
-            processed_results.append({'test':doc,'page_number':metadata.get("page_number")})
+            processed_results.append({'test':doc,
+                                      'page_number':metadata.get("page_number","?"),
+                                      'distance':distance,
+                                      'relevance_score':relevance,
+                                      'adjusted_score':adjusted_score,
+                                      'is_question':is_question,
+                                      'has_answer':has_answer,
+                                      'metadata':metadata})
+        processed_results.sort(key=lambda x:x['adjusted_score'], reverse=True) #sort the chunks according to the newly calculated relevance scores
+        results = processed_results[:top_k] #retun top_k chunks after doing the re-ranking
+        print(f"Retrieved {len(results)} relvant chunks")
+        return results
+#the function which will be used to build the prompt to the LLM
+def build_prompt(query:str,chunks:List[Dict[str,Any]]) -> str:
+    context_parts = []
+    for i, chunk in enumerate(chunks,1): #giving the chunks a number so that we can refer to them in the prompt, we start from 1
+        text = chunk['text'].strip() #clean the text from the prompt
+        source = f"[Source {i} - Page{chunk['page_number']}]"
+        context_parts.append(f"{source}\n{text}\n")
+    context = '\n'.join(context_parts)
+    prompt = f'''You are a helpful assistant answering questions based ONLY on the provided context
+    Context : {context}
+    Question : {query}
+    Instruction:
+    1. Asnwer ONLY using information from the context above
+    2. If the answer is not in the context, say "I cannot find this information in the document."
+    3. Be concise and accurate
+    4. If you use specific information, mention which source you used.
+    ANSWER:'''
+    return prompt
+#the function which will generate the answer in natural language by interacting with the llm defined
+def generate_answer(prompt:str,model:str=llm_model) -> str:
+    print(f"Generating answer using {model}")
+    try:
+        response = ollama.chat(
+            model=model,
+            messages=[{'role':'user',
+                       'content':prompt}],
+            options={'temperature':0.3,
+                     'num_predict':500,
+                     'stop':['\n\n\n']}
+        )
+        answer = response['message']['content'].strip()
+        return answer
+    except Exception as e:
+        print(f"Failed to generate answer: {e}")
+#function to save the produced results
+def save_query_result(query:str,chunks:List[Dict[str,Any]],answer:str):
+    result = {
+        'query' : query,
+        'timestamp':time.strftime("%Y-%m-%d %H:%M:%S"),
+        'model':llm_model,
+        'chunks_retrieved':len(chunks),
+        'sources':[
+            {
+                'page':c['page_number'],
+                'relevance' : c['relevance_score'],
+                'text_preview': c['text'][:200]
+            }
+            for c in chunks
+        ],
+        'context' : '\n'.join([c['text'] for c in chunks]),
+        'answer' : answer
+    }
+    safe_query = ''.join(c for c in query if c.isalnum() or c.isspace()).replace(' ','_')
+    file_name = retrieval_dir/f"qa_{safe_query}_{time.strftime("%Y%m%d_%H%M%S")}.json"
+    with open(file_name,"w",encoding='utf-8') as f:
+        json.dump(result,f,indent=2,ensure_ascii=False)
+    print(f"\n Saved to {file_name}")
+    return result
+#the main function which connects the retrive - augment and generate process
+def answer_question(collection)
+        
+
             
