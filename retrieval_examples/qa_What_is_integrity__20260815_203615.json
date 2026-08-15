@@ -1,0 +1,35 @@
+{
+  "query": "What is integrity ?",
+  "timestamp": "2026-08-15 20:36:15",
+  "model": "phi3:mini",
+  "chunks_retrieved": 5,
+  "sources": [
+    {
+      "page": 3,
+      "relevance": -380.81793212890625,
+      "text_preview": "programs, devices, and data from cyberattacks, damage, or unauthorized access. CIA Triad: Confidentiality, Integrity, Availability\nThe CIA triad is a foundational model for information security, outli"
+    },
+    {
+      "page": 5,
+      "relevance": -392.8092346191406,
+      "text_preview": "due to potential severe impacts on safety, efficiency, and privacy. Safety: Compromising V2I can be life-threatening. For instance, an attacker\nmanipulating traffic light timings (violating Integrity)"
+    },
+    {
+      "page": 7,
+      "relevance": -407.355224609375,
+      "text_preview": "tampered with by unauthorized parties and remains accurate and complete. For ECU firmware updates, integrity is\nparamount:\nExample: When an OEM releases a firmware update for a vehicle's Engine Contro"
+    },
+    {
+      "page": 7,
+      "relevance": -407.9538879394531,
+      "text_preview": "communication logs) is transmitted between ECUs, especially to/from infotainment systems. •\nProprietary Information: Critical vehicle control parameters or diagnostic data\nthat could be exploited by c"
+    },
+    {
+      "page": 2,
+      "relevance": -409.3910217285156,
+      "text_preview": "Confidential C\n3. Risk Assessment and Management\na. OEMs must conduct comprehensive threat, risk and hazard analysis (via\nthe HARA and TARA methodologies) to identify potential cyberattacks and\nassoci"
+    }
+  ],
+  "context": "programs, devices, and data from cyberattacks, damage, or unauthorized access. CIA Triad: Confidentiality, Integrity, Availability\nThe CIA triad is a foundational model for information security, outlining the three\nprimary goals of any security system. 1. Confidentiality ensures that information is accessible only to authorized\nindividuals, entities, or processes. It prevents unauthorized disclosure of\nsensitive data. 2. Integrity ensures that information is accurate, complete, and has not been\nmodified or tampered with by unauthorized parties. It also implies that the data\nis consistent and trustworthy. 3. Availability ensures that authorized users can access information and resources\nwhen needed.\ndue to potential severe impacts on safety, efficiency, and privacy. Safety: Compromising V2I can be life-threatening. For instance, an attacker\nmanipulating traffic light timings (violating Integrity) could cause accidents. Similarly,\nsending false warnings or blocking real ones from Roadside Units (RSUs)\n(affecting Availability and Integrity) endangers drivers.\ntampered with by unauthorized parties and remains accurate and complete. For ECU firmware updates, integrity is\nparamount:\nExample: When an OEM releases a firmware update for a vehicle's Engine Control Unit\n(ECU), it's critical to ensure that the update file received by the vehicle is exactly what\nthe OEM intended and hasn't been maliciously modified. 1. Digital Signature: The OEM digitally signs the firmware update package using\ntheir private key. 2. Cryptographic Hash: A cryptographic hash (e.g., SHA-256) of the update file is\ngenerated and included in the signed package. 3. Verification: Before installing the update, the vehicle's ECU uses the OEM's\npublic key to verify the digital signature.\ncommunication logs) is transmitted between ECUs, especially to/from infotainment systems. •\nProprietary Information: Critical vehicle control parameters or diagnostic data\nthat could be exploited by competitors or malicious actors if intercepted. •\nExternal Interfaces: When data from the CAN bus is bridged to external\nnetworks (e.g., telematics, V2X), confidentiality measures like encryption\nbecome essential to prevent eavesdropping and unauthorized access to internal\nvehicle data. 8b. Explain Integrity with an example related ECU firmware updates\nIntegrity ensures that data has not been altered or tampered with by unauthorized\nparties and remains accurate and complete.\nConfidential C\n3. Risk Assessment and Management\na. OEMs must conduct comprehensive threat, risk and hazard analysis (via\nthe HARA and TARA methodologies) to identify potential cyberattacks and\nassociated risks. b. This Involves understanding various attack models, their motivations, and\nthe potential impact (e.g., Data Theft, DoS, Intentional Manipulation and\nUnauthorized physical access)\n4. Robust System Architecture:\na. OEMS need to implement a multi-layered cybersecurity approach,\nincluding perimeter security (protecting external connections line OBD\nports, Wi-Fi, Bluetooth etc.,), network security via firewalls, central\ngateways. b.",
+  "answer": "Integrity, in the context of information security, refers to the assurance that data has not been altered or tampered with by unauthorized parties and remains accurate and complete. For example, when an OEM releases a firmware update for a vehicle's Engine Control Unit (ECU), it's critical to ensure the update file's integrity. This is done by digitally signing the firmware update package using the OEM's private key and generating a cryptographic hash of the update file, which is then included in the signed package. Before installing the update, the vehicle's ECU verifies the digital signature using the OEM's public key, ensuring the firmware update has not been maliciously modified. This example is based on information from Source 3."
+}

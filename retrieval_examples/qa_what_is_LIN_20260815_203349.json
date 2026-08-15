@@ -1,0 +1,35 @@
+{
+  "query": "what is LIN",
+  "timestamp": "2026-08-15 20:33:49",
+  "model": "phi3:mini",
+  "chunks_retrieved": 5,
+  "sources": [
+    {
+      "page": 4,
+      "relevance": -347.86297607421875,
+      "text_preview": "high speed and the complex architecture available on CAN bus. It’s primarily\nused in Body electronics components like Power Windows, Seat Adjustments and\nWindshield wipers etc.,\nLIN Architecture Compo"
+    },
+    {
+      "page": 5,
+      "relevance": -378.4432373046875,
+      "text_preview": "Confidential C\nCommunication occurs over a single wire line, requiring simple wiring and hence the\nlow cost. The LIN protocol Data transfer rate is around 20 kbit/s, with the ability to be connected\nt"
+    },
+    {
+      "page": 4,
+      "relevance": -378.58905029296875,
+      "text_preview": "Confidential C\nQuestion 4\nExplain the below terms in detail:\n4a. Cryptography\nAnswer\nCryptography is the process in which the information is “scrambled” so that certain\npieces of the information is hi"
+    },
+    {
+      "page": 7,
+      "relevance": -509.9326171875,
+      "text_preview": "communication logs) is transmitted between ECUs, especially to/from infotainment systems. •\nProprietary Information: Critical vehicle control parameters or diagnostic data\nthat could be exploited by c"
+    },
+    {
+      "page": 12,
+      "relevance": -514.1165161132812,
+      "text_preview": "Radar, LiDAR) Provide environmental perception for ADAS and autonomous driving. •\nVulnerability: Spoofing or jamming sensor signals to deceive the vehicle\nabout objects, lanes, or traffic signs, causi"
+    }
+  ],
+  "context": "high speed and the complex architecture available on CAN bus. It’s primarily\nused in Body electronics components like Power Windows, Seat Adjustments and\nWindshield wipers etc.,\nLIN Architecture Components\nLIN primarily adopts Master Slave architecture,\n• the Master Node which typically is a Powerful ECU which is connected with a\nhigher-level network like CAN, this acts as a gateway & controls the timing of\nall communication on the LIN bus\n• The Slave Node are typically Simple Actuators, Switches or Intelligent\nsensors\nConfidential C\nCommunication occurs over a single wire line, requiring simple wiring and hence the\nlow cost. The LIN protocol Data transfer rate is around 20 kbit/s, with the ability to be connected\nto a maximum of 16 subscribers (1 master + 15 slave nodes) which are typically\nconnected in a Linear Bus Topology. 5b. MOST\nMOST is a high-speed multimedia network technology specifically designed for use in\nvehicles. Its primary purpose is the efficient transmission of audio, video, and control\ndata, making it a common choice for infotainment systems within a car. While MOST\noffers significant bandwidth for multimedia applications, the document highlights that\nits security features are often limited.\nConfidential C\nQuestion 4\nExplain the below terms in detail:\n4a. Cryptography\nAnswer\nCryptography is the process in which the information is “scrambled” so that certain\npieces of the information is hidden\n4b. Encryption\nAnswer\nEncryption is the process of converting a message from one system of communication\nto another. 4c. Decryption\nAnswer\nThe process of converting a coded message back to its plain text form\nQuestion 5\nWrite short note on the following related to vehicle network\ncommunication\n5a. LIN (Local Interconnection Network)\nAnswer\nLIN is a communication protocol which is primarily used for simple networking tasks,\nprimarily due to it being cost effective. Unlike CAN it adopts a Serial Bus System, hence\nlacks the high speed and the complex architecture available on CAN bus.\ncommunication logs) is transmitted between ECUs, especially to/from infotainment systems. •\nProprietary Information: Critical vehicle control parameters or diagnostic data\nthat could be exploited by competitors or malicious actors if intercepted. •\nExternal Interfaces: When data from the CAN bus is bridged to external\nnetworks (e.g., telematics, V2X), confidentiality measures like encryption\nbecome essential to prevent eavesdropping and unauthorized access to internal\nvehicle data. 8b. Explain Integrity with an example related ECU firmware updates\nIntegrity ensures that data has not been altered or tampered with by unauthorized\nparties and remains accurate and complete.\nRadar, LiDAR) Provide environmental perception for ADAS and autonomous driving. •\nVulnerability: Spoofing or jamming sensor signals to deceive the vehicle\nabout objects, lanes, or traffic signs, causing incorrect driving decisions. 7. Software Update Mechanisms (OTA): Allows remote software and firmware\nupdates. •\nVulnerability: Injection of malicious updates if the process isn't properly\nauthenticated and encrypted, or integrity checks are bypassed.",
+  "answer": "LIN, or Local Interconnection Network, is a communication protocol used in vehicles primarily for simple networking tasks. It is cost-effective and adopts a Serial Bus System, which is different from CAN bus as it lacks high speed and complex architecture (Source 1). LIN primarily uses a Master Slave architecture, where the Master Node, typically a powerful ECU connected to a higher-level network like CAN, controls the timing of all communication on the LIN bus. The Slave Nodes are usually simple actuators, switches, or intelligent sensors (Source 1)."
+}

@@ -1,0 +1,35 @@
+{
+  "query": "what is VANET",
+  "timestamp": "2026-08-15 20:35:35",
+  "model": "phi3:mini",
+  "chunks_retrieved": 5,
+  "sources": [
+    {
+      "page": 6,
+      "relevance": -433.9580993652344,
+      "text_preview": "Confidential C\nEfficiency: V2I optimizes traffic flow. A cyberattack disrupting adaptive traffic\nmanagement systems (impacting Availability and Integrity) would lead to massive\ncongestion and economic"
+    },
+    {
+      "page": 6,
+      "relevance": -444.1224365234375,
+      "text_preview": "spoofing or jamming could mislead the vehicle, compromising safety. 7b. Vision Technology\nVision technology allows autonomous vehicles to \"see\" and understand their\nsurroundings. It integrates data fr"
+    },
+    {
+      "page": 5,
+      "relevance": -457.7618103027344,
+      "text_preview": "the document highlights that its security features are often limited. This characteristic makes MOST a potential target\nfor attackers who might seek to disrupt infotainment services or, if not properl"
+    },
+    {
+      "page": 11,
+      "relevance": -459.4518127441406,
+      "text_preview": "communicating internally and externally, creating significant cybersecurity attack surfaces. 1. Telematics/External Communication Unit: (Cellular, Wi-Fi, V2X) This is the\nvehicle's primary interface t"
+    },
+    {
+      "page": 5,
+      "relevance": -469.06591796875,
+      "text_preview": "due to potential severe impacts on safety, efficiency, and privacy. Safety: Compromising V2I can be life-threatening. For instance, an attacker\nmanipulating traffic light timings (violating Integrity)"
+    }
+  ],
+  "context": "Confidential C\nEfficiency: V2I optimizes traffic flow. A cyberattack disrupting adaptive traffic\nmanagement systems (impacting Availability and Integrity) would lead to massive\ncongestion and economic losses. Privacy: V2I systems, like smart parking or electronic tolling, collect sensitive vehicle\nand driver data. Breaching this data's Confidentiality could expose personal travel\npatterns or financial information. Robust cybersecurity, encompassing Authentication, Authorization, Accounting, and\nensuring Confidentiality, Integrity, and Availability, is crucial for V2I's safe, reliable,\nand trustworthy operation, preventing chaos and maintaining public confidence in\nintelligent transportation systems.\nspoofing or jamming could mislead the vehicle, compromising safety. 7b. Vision Technology\nVision technology allows autonomous vehicles to \"see\" and understand their\nsurroundings. It integrates data from:\n•\nCameras: Provide rich visual data for object classification, lane detection, and\ntraffic sign recognition, though sensitive to lighting. •\nLiDAR: Generates precise 3D point clouds for accurate depth and obstacle\ndetection, effective in varying light. •\nRadar: Excels in adverse weather for long-range detection and velocity\nmeasurement. Sensor fusion combines these inputs for a comprehensive and\nrobust environmental perception. Cybersecurity concerns include adversarial\nattacks that can trick AI perception or jamming of sensors, leading to dangerous\nmisinterpretations.\nthe document highlights that its security features are often limited. This characteristic makes MOST a potential target\nfor attackers who might seek to disrupt infotainment services or, if not properly secured,\ninject malicious data into other connected vehicle systems. MOST Architecture\n•\nMOST is designed to connect various multimedia devices within an automotive\nnetwork. •\nIt allows for both synchronous and asynchronous data transmission, which is\ncrucial for real-time audio and video. •\nCommunication typically occurs over Fiber optic cables, which contributes to its\nhigh speed and immunity to electromagnetic interference.\ncommunicating internally and externally, creating significant cybersecurity attack surfaces. 1. Telematics/External Communication Unit: (Cellular, Wi-Fi, V2X) This is the\nvehicle's primary interface to the outside world.\ndue to potential severe impacts on safety, efficiency, and privacy. Safety: Compromising V2I can be life-threatening. For instance, an attacker\nmanipulating traffic light timings (violating Integrity) could cause accidents. Similarly,\nsending false warnings or blocking real ones from Roadside Units (RSUs)\n(affecting Availability and Integrity) endangers drivers.",
+  "answer": "VANET (Vehicular Ad-Hoc Network) is not explicitly mentioned in the provided context. I cannot find this information in the document."
+}

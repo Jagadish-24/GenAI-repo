@@ -5,6 +5,7 @@ import time
 from pathlib import Path
 from typing import List,Dict, Any
 import re
+import requests
 #libraries for retreival
 import chromadb
 from chromadb.config import Settings
@@ -50,7 +51,7 @@ def get_query_embedding(query_text:str) -> List[float]:
     except Exception as e:
         print(f"Failed to generate embedding for this query {query_text}")
 #function to perform the chunk retrieval from the database
-def retrieve_chunks(collection,query:str,top_k int = top_k_retrievals) -> List[Dict[str,Any]]:
+def retrieve_chunks(collection,query:str,top_k :int = top_k_retrievals) -> List[Dict[str,Any]]:
     query_embedding = get_query_embedding(query)
     results = collection.query(query_embeddings = [query_embedding],n_results=top_k*2) #here we get twice the required amount of chunks because we can use to re-rank them as needed later
     processed_results = []
@@ -63,9 +64,9 @@ def retrieve_chunks(collection,query:str,top_k int = top_k_retrievals) -> List[D
             is_question = False #since the document is in the form of question and answer, there is a possiblity that the retrieval will retreive he question chunk rather than the answer so we have bool which updates when we see a question in the retrived chunk and then we demote it in rank
             has_answer = False
             #check if it is a question
-            if doc.strip().stratswith(('Q','Q:','Qn','Question','Question:',QUESTION','QUESTION:))
+            if doc.strip().startswith(('Q:', 'Q ', 'Question:', 'QUESTION:')):
                 is_question = True
-            if re.search(r'Answer:|A:|Solution:|Steps:|'):
+            if re.search(r'Answer:|A:|Solution:|Steps:|',doc):
                 has_answer = True
             adjusted_score = relevance if relevance else 0
 #here we are increasing the score of anything that looks like an answer and also does not look like a question
@@ -76,7 +77,7 @@ def retrieve_chunks(collection,query:str,top_k int = top_k_retrievals) -> List[D
 #again we are penalizing the score anything that is a question and not an answer
             if is_question and not has_answer:
                 adjusted_score -= 0.10
-            processed_results.append({'test':doc,
+            processed_results.append({'full_text':doc,
                                       'page_number':metadata.get("page_number","?"),
                                       'distance':distance,
                                       'relevance_score':relevance,
@@ -92,7 +93,7 @@ def retrieve_chunks(collection,query:str,top_k int = top_k_retrievals) -> List[D
 def build_prompt(query:str,chunks:List[Dict[str,Any]]) -> str:
     context_parts = []
     for i, chunk in enumerate(chunks,1): #giving the chunks a number so that we can refer to them in the prompt, we start from 1
-        text = chunk['text'].strip() #clean the text from the prompt
+        text = chunk['full_text'].strip() #clean the text from the prompt
         source = f"[Source {i} - Page{chunk['page_number']}]"
         context_parts.append(f"{source}\n{text}\n")
     context = '\n'.join(context_parts)
@@ -133,11 +134,11 @@ def save_query_result(query:str,chunks:List[Dict[str,Any]],answer:str):
             {
                 'page':c['page_number'],
                 'relevance' : c['relevance_score'],
-                'text_preview': c['text'][:200]
+                'text_preview': c['full_text'][:200]
             }
             for c in chunks
         ],
-        'context' : '\n'.join([c['text'] for c in chunks]),
+        'context' : '\n'.join([c['full_text'] for c in chunks]),
         'answer' : answer
     }
     safe_query = ''.join(c for c in query if c.isalnum() or c.isspace()).replace(' ','_')
@@ -147,7 +148,65 @@ def save_query_result(query:str,chunks:List[Dict[str,Any]],answer:str):
     print(f"\n Saved to {file_name}")
     return result
 #the main function which connects the retrive - augment and generate process
-def answer_question(collection)
-        
+def answer_question(collection,query:str,show_sources:bool,save:bool=True):
+    chunks = retrieve_chunks(collection,query)
+    if not chunks:
+        print("No relevant chunks found")
+        return "No relevant info found in the document."
+    if show_sources:
+        print('\nRetrieved Sources are as follows:')
+        for i, chunk in enumerate(chunks,1):
+            score = chunk['adjusted_score']
+            page = chunk['page_number']
+            is_question = 'yes' if chunk['is_question'] == True else 'No'
+            has_answer = 'yes' if chunk['has_answer'] == True else 'No'
+            preview = chunk['full_text'][:250].replace('\n',' ')
+            if len(chunk['full_text']) > 250:
+                preview += '...'
+            print(f"\n[{i}]\nis question = {is_question}\npage = {page}\nscore = {score:.3f}\nhas_answer = {has_answer}\npreview = {preview}")
+        prompt = build_prompt(query,chunks)
+        answer = generate_answer(prompt)
+        print(f'answer = {answer}')
+        if show_sources:
+            print('The sources for this answer are :')
+            for i,chunk in enumerate(chunks,1):
+                print(f"Source = {i}: Page {chunk['page_number']}")
+    if save:
+        save_query_result(query,chunks,answer)
+    return answer
+#the function to maintain a interactive session with the user by getting his or her inputs and providing answers
+def interactive_session(collection):
+    print("Starting Chat...")
+    print(f"Using model = {llm_model}")
+    print(f'Retrieving top {top_k_retrievals} chunks')
+    print('Type "quit" to exit the chat')
+    question_count = 0
+    while True:
+        query = input('\nYour question please : ').strip()
+        if query.lower() in ['quit','exit','Quit','Exit','q']:
+            print(f"\nThank you, you asked {question_count}")
+            break
+        if not query:
+            print('Please enter a question')
+            continue
+        question_count += 1
+        try:
+            answer_question(collection,query,show_sources=True,save=True)
+        except Exception as e:
+            print(f"Error : {e} - Please try again")
 
-            
+#here comes the main execution
+
+response = requests.get("http://localhost:11434/api/tags",timeout=2)
+if response.status_code == 200:
+    models = [m['name'] for m in response.json().get('models',[])]
+    print(f"\nOllama running. Available models: {', '.join(models)}")
+    #check if LLM model is available
+    if not any(llm_model in m for m in models):
+        print(f"Model '{llm_model}' not found\nRun: `ollama pull {llm_model}` or change change the llm_mdoel to {', '.join(models)}")
+    print(f'Connecting to vector database')
+    client = get_chroma_client()
+    collection = get_collection(client)
+    if collection.count() == 0:
+        print('database empty')
+    interactive_session(collection)

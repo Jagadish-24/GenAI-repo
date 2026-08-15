@@ -1,0 +1,35 @@
+{
+  "query": "what is decryption",
+  "timestamp": "2026-08-15 20:39:54",
+  "model": "phi3:mini",
+  "chunks_retrieved": 5,
+  "sources": [
+    {
+      "page": 4,
+      "relevance": -328.5369567871094,
+      "text_preview": "Confidential C\nQuestion 4\nExplain the below terms in detail:\n4a. Cryptography\nAnswer\nCryptography is the process in which the information is “scrambled” so that certain\npieces of the information is hi"
+    },
+    {
+      "page": 2,
+      "relevance": -376.51300048828125,
+      "text_preview": "Wi-Fi, Bluetooth etc.,), network security via firewalls, central gateways. b. The ECU also must be protected against various attack classes through\ncountermeasures like encryption, authentication, cod"
+    },
+    {
+      "page": 12,
+      "relevance": -390.77667236328125,
+      "text_preview": "Confidential C\n•\nVulnerability: Remote unauthorized access via protocol exploits (e.g., in\ncellular modems) or V2X signal spoofing, deceiving the vehicle about its\nenvironment. 2. Infotainment System:"
+    },
+    {
+      "page": 7,
+      "relevance": -392.970703125,
+      "text_preview": "communication logs) is transmitted between ECUs, especially to/from infotainment systems. •\nProprietary Information: Critical vehicle control parameters or diagnostic data\nthat could be exploited by c"
+    },
+    {
+      "page": 2,
+      "relevance": -396.69415283203125,
+      "text_preview": "Confidential C\n3. Risk Assessment and Management\na. OEMs must conduct comprehensive threat, risk and hazard analysis (via\nthe HARA and TARA methodologies) to identify potential cyberattacks and\nassoci"
+    }
+  ],
+  "context": "Confidential C\nQuestion 4\nExplain the below terms in detail:\n4a. Cryptography\nAnswer\nCryptography is the process in which the information is “scrambled” so that certain\npieces of the information is hidden\n4b. Encryption\nAnswer\nEncryption is the process of converting a message from one system of communication\nto another. 4c. Decryption\nAnswer\nThe process of converting a coded message back to its plain text form\nQuestion 5\nWrite short note on the following related to vehicle network\ncommunication\n5a. LIN (Local Interconnection Network)\nAnswer\nLIN is a communication protocol which is primarily used for simple networking tasks,\nprimarily due to it being cost effective. Unlike CAN it adopts a Serial Bus System, hence\nlacks the high speed and the complex architecture available on CAN bus.\nWi-Fi, Bluetooth etc.,), network security via firewalls, central gateways. b. The ECU also must be protected against various attack classes through\ncountermeasures like encryption, authentication, code analysis and\nphysical tapering detection\nCybersecurity Requirements at the Supplier Level\n1. Adherence to OEM specifications and Industry Standards – Suppliers must\nstrictly adhere to cybersecurity specs provided by the OEM and comply with\nrelevant industry standards like the ISO/SAE 21434. 2. Secure Development of Components and Software\na. AUTOSAR Implementation: Suppliers developing AUTOSAR-based\nsoftware must ensure their implementations are secure, even if OEMs\ndefine the specific cryptographic algorithms. This includes secure coding\npractices and thorough testing. b.\nConfidential C\n•\nVulnerability: Remote unauthorized access via protocol exploits (e.g., in\ncellular modems) or V2X signal spoofing, deceiving the vehicle about its\nenvironment. 2. Infotainment System: (Navigation, media, smartphone integration) Often based\non operating systems like Linux/Android. •\nVulnerability: Malware injection via USB/Bluetooth, exploitation of app\nvulnerabilities, or serving as a pivot point to internal networks if not\nproperly isolated. 3. Gateway/Central ECU: Acts as a firewall and router, connecting internal\nnetworks (CAN, Ethernet) and controlling data flow. •\nVulnerability: A single point of failure; if compromised, an attacker can\nbypass filtering rules and gain control over multiple networks. 4.\ncommunication logs) is transmitted between ECUs, especially to/from infotainment systems. •\nProprietary Information: Critical vehicle control parameters or diagnostic data\nthat could be exploited by competitors or malicious actors if intercepted. •\nExternal Interfaces: When data from the CAN bus is bridged to external\nnetworks (e.g., telematics, V2X), confidentiality measures like encryption\nbecome essential to prevent eavesdropping and unauthorized access to internal\nvehicle data. 8b. Explain Integrity with an example related ECU firmware updates\nIntegrity ensures that data has not been altered or tampered with by unauthorized\nparties and remains accurate and complete.\nConfidential C\n3. Risk Assessment and Management\na. OEMs must conduct comprehensive threat, risk and hazard analysis (via\nthe HARA and TARA methodologies) to identify potential cyberattacks and\nassociated risks. b. This Involves understanding various attack models, their motivations, and\nthe potential impact (e.g., Data Theft, DoS, Intentional Manipulation and\nUnauthorized physical access)\n4. Robust System Architecture:\na. OEMS need to implement a multi-layered cybersecurity approach,\nincluding perimeter security (protecting external connections line OBD\nports, Wi-Fi, Bluetooth etc.,), network security via firewalls, central\ngateways. b.",
+  "answer": "Decryption is the process of converting a coded message back to its plain text form. This allows the original information to be understood. The context provided does not specify particular methods or algorithms for decryption, but it implies that decryption is the reverse process of encryption, which is converting a message from one system of communication to another. (Source: Answer based on the definition of decryption in the context)"
+}
